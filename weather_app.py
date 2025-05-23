@@ -371,24 +371,25 @@ if df is not None:
     start_date = df['date'].min().strftime('%Y-%m-%d')
     end_date = df['date'].max().strftime('%Y-%m-%d')
     
-    st.markdown(f"""
-    ## Weather Data Analysis Summary
+    # Create the report content
+    report_content = f"""
+    # Weather Data Analysis Summary Report
     
-    ### Dataset Overview
+    ## Dataset Overview
     - **Date Range**: {start_date} to {end_date}
     - **Total Records**: {len(df):,}
     
-    ### Key Findings
+    ## Key Findings
     
-    #### Temperature Patterns
+    ### Temperature Patterns
     - **Average Temperature**: {avg_temp:.2f}°C
     - **Temperature Range**: {temp_range[0]:.2f}°C to {temp_range[1]:.2f}°C
     
-    #### Weather Conditions
+    ### Weather Conditions
     - **Average Humidity**: {avg_humidity:.1f}%
     - **Most Common Weather**: {most_common_weather} ({weather_percentage:.1f}% of observations)
     
-    #### Key Relationships
+    ### Key Relationships
     - **Temperature-Humidity Correlation**: {df['temperature'].corr(df['humidity']):.3f}
     - **Temperature-Pressure Correlation**: {df['temperature'].corr(df['pressure']):.3f}
     - **Temperature-Wind Speed Correlation**: {df['temperature'].corr(df['wind_speed']):.3f}
@@ -398,11 +399,97 @@ if df is not None:
     - Peak temperature usually occurs in the mid-afternoon
     - Humidity is generally highest overnight and lowest in the afternoon
     
-    ### Conclusion
+    ## Conclusion
     This analysis reveals clear seasonal and daily patterns in temperature and other variables.
     The relationships between different weather variables follow expected meteorological principles,
     with notable correlations between temperature, humidity, and other atmospheric conditions.
-    """)
+    """
+    
+    # Display report in the app
+    st.markdown(report_content)
+    
+    # Function to convert markdown to PDF
+    def create_pdf_from_report(report_text):
+        import io
+        from reportlab.lib.pagesizes import letter
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+        from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+        from reportlab.lib.enums import TA_CENTER
+        from reportlab.lib.units import inch
+        
+        # Create an in-memory buffer
+        buffer = io.BytesIO()
+        
+        # Create the PDF document
+        doc = SimpleDocTemplate(buffer, pagesize=letter, 
+                               rightMargin=0.5*inch, leftMargin=0.5*inch,
+                               topMargin=0.5*inch, bottomMargin=0.5*inch)
+        
+        # Get styles
+        styles = getSampleStyleSheet()
+        styles.add(ParagraphStyle(name='Title', 
+                                  parent=styles['Heading1'], 
+                                  fontSize=16, 
+                                  alignment=TA_CENTER))
+        
+        # Process the markdown text into reportlab elements
+        elements = []
+        
+        # Split by lines
+        lines = report_text.strip().split("\n")
+        current_list = []
+        
+        for line in lines:
+            line = line.strip()
+            if not line:
+                if current_list:
+                    elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+                    current_list = []
+                elements.append(Spacer(1, 0.1*inch))
+            elif line.startswith("# "):
+                if current_list:
+                    elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+                    current_list = []
+                elements.append(Paragraph(line[2:], styles["Title"]))
+            elif line.startswith("## "):
+                if current_list:
+                    elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+                    current_list = []
+                elements.append(Paragraph(line[3:], styles["Heading2"]))
+            elif line.startswith("### "):
+                if current_list:
+                    elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+                    current_list = []
+                elements.append(Paragraph(line[4:], styles["Heading3"]))
+            elif line.startswith("- "):
+                # Convert markdown list items to HTML list items
+                current_list.append(f"• {line[2:]}")
+            else:
+                if current_list:
+                    elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+                    current_list = []
+                elements.append(Paragraph(line, styles["Normal"]))
+        
+        # Add any remaining list items
+        if current_list:
+            elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
+        
+        # Build the PDF
+        doc.build(elements)
+        
+        # Get the PDF data
+        pdf_data = buffer.getvalue()
+        buffer.close()
+        
+        return pdf_data
+    
+    # Create a download button for the PDF report
+    st.download_button(
+        label="📥 Download Report as PDF",
+        data=create_pdf_from_report(report_content),
+        file_name="weather_data_analysis_report.pdf",
+        mime="application/pdf",
+    )
 
 else:
     st.error("Failed to load data. Please check the file path and try again.")
