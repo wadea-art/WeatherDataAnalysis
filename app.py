@@ -62,9 +62,11 @@ if df is not None:
     
     # Show data types and info
     with st.expander("Data Types and Information"):
-        buffer = pd.io.StringIO()
-        df.info(buf=buffer)
-        info_str = buffer.getvalue()
+        # Create a string representation of dataframe info
+        info_str = f"DataFrame has {df.shape[0]} rows and {df.shape[1]} columns\n\n"
+        info_str += "Data types:\n"
+        for col, dtype in df.dtypes.items():
+            info_str += f"  {col}: {dtype}\n"
         st.text(info_str)
     
     # Basic statistics
@@ -177,7 +179,8 @@ if df is not None:
         
         # Calculate correlation
         corr = df[x_var].corr(df[y_var])
-        st.write(f"Correlation between {x_var} and {y_var}: **{corr:.4f}**")
+        corr_value = corr if not pd.isna(corr) else 0
+        st.write(f"Correlation between {x_var} and {y_var}: **{corr_value:.4f}**")
         
         # Correlation heatmap
         st.subheader("Correlation Matrix")

@@ -77,7 +77,7 @@ def perform_univariate_analysis(df, variable):
         stats[f'{int(p*100)}th Percentile'] = val
     
     # Convert to DataFrame
-    stats_df = pd.DataFrame(stats.items(), columns=['Statistic', 'Value'])
+    stats_df = pd.DataFrame(list(stats.items()), columns=['Statistic', 'Value'])
     
     return stats_df
 
