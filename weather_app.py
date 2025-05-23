@@ -427,10 +427,11 @@ if df is not None:
         
         # Get styles
         styles = getSampleStyleSheet()
-        styles.add(ParagraphStyle(name='Title', 
-                                  parent=styles['Heading1'], 
-                                  fontSize=16, 
-                                  alignment=TA_CENTER))
+        # Create custom styles - use a different name to avoid conflicts
+        title_style = ParagraphStyle(name='DocTitle', 
+                                 parent=styles['Heading1'], 
+                                 fontSize=16, 
+                                 alignment=TA_CENTER)
         
         # Process the markdown text into reportlab elements
         elements = []
@@ -450,7 +451,7 @@ if df is not None:
                 if current_list:
                     elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
                     current_list = []
-                elements.append(Paragraph(line[2:], styles["Title"]))
+                elements.append(Paragraph(line[2:], title_style))
             elif line.startswith("## "):
                 if current_list:
                     elements.append(Paragraph("<br/>".join(current_list), styles["Normal"]))
