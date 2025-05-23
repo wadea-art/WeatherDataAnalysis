@@ -21,44 +21,45 @@ def generate_project_documentation():
     
     # Get styles
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name='Title', 
-                            parent=styles['Heading1'], 
-                            fontSize=20, 
-                            alignment=TA_CENTER,
-                            spaceAfter=16))
-    styles.add(ParagraphStyle(name='Heading2', 
-                            parent=styles['Heading2'], 
-                            fontSize=16, 
-                            spaceAfter=12))
-    styles.add(ParagraphStyle(name='Heading3', 
-                            parent=styles['Heading3'], 
-                            fontSize=14, 
-                            spaceAfter=10))
-    styles.add(ParagraphStyle(name='Normal_Justified', 
-                            parent=styles['Normal'], 
-                            alignment=TA_JUSTIFY,
-                            spaceAfter=8))
+    # Create custom styles with unique names to avoid conflicts
+    doc_title_style = ParagraphStyle(name='DocTitleStyle', 
+                                 parent=styles['Heading1'], 
+                                 fontSize=20, 
+                                 alignment=TA_CENTER,
+                                 spaceAfter=16)
+    doc_heading2_style = ParagraphStyle(name='DocHeading2Style', 
+                                parent=styles['Heading2'], 
+                                fontSize=16, 
+                                spaceAfter=12)
+    doc_heading3_style = ParagraphStyle(name='DocHeading3Style', 
+                                parent=styles['Heading3'], 
+                                fontSize=14, 
+                                spaceAfter=10)
+    doc_normal_style = ParagraphStyle(name='DocNormalStyle', 
+                                  parent=styles['Normal'], 
+                                  alignment=TA_JUSTIFY,
+                                  spaceAfter=8)
     
     # Define all content elements
     elements = []
     
     # Title
-    elements.append(Paragraph("Weather Data Analysis Project", styles['Title']))
+    elements.append(Paragraph("Weather Data Analysis Project", doc_title_style))
     elements.append(Spacer(1, 0.2*inch))
     
     # Introduction
-    elements.append(Paragraph("1. Introduction", styles['Heading2']))
+    elements.append(Paragraph("1. Introduction", doc_heading2_style))
     intro_text = """
     This document provides a comprehensive overview of the Weather Data Analysis project, which is designed
     to analyze historical weather data and extract meaningful insights through statistical analysis and 
     data visualization. The application enables users to explore temperature patterns, correlations between 
     weather variables, and seasonal trends from a comprehensive weather dataset.
     """
-    elements.append(Paragraph(intro_text, styles['Normal_Justified']))
+    elements.append(Paragraph(intro_text, doc_normal_style))
     elements.append(Spacer(1, 0.1*inch))
     
     # Project Overview
-    elements.append(Paragraph("2. Project Overview", styles['Heading2']))
+    elements.append(Paragraph("2. Project Overview", doc_heading2_style))
     overview_text = """
     The Weather Data Analysis application is a Streamlit-based web application that processes and analyzes
     historical weather data. It provides interactive visualizations and statistical analysis to help users
