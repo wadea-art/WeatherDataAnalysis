@@ -40,11 +40,27 @@ def clean_data(df):
     # Make a copy to avoid modifying the original dataframe
     df_cleaned = df.copy()
     
-    # Rename columns to more convenient names
-    df_cleaned.columns = [col.replace(' ', '').replace('(', '').replace(')', '').replace('/', '_') for col in df_cleaned.columns]
+    # Rename columns to more convenient names (remove spaces, parentheses, etc.)
+    columns_map = {
+        'Formatted Date': 'formatted_date',
+        'Summary': 'summary',
+        'Precip Type': 'precip_type',
+        'Temperature (C)': 'temperature',
+        'Apparent Temperature (C)': 'apparent_temperature',
+        'Humidity': 'humidity',
+        'Wind Speed (km/h)': 'wind_speed',
+        'Wind Bearing (degrees)': 'wind_bearing',
+        'Visibility (km)': 'visibility',
+        'Loud Cover': 'loud_cover',
+        'Pressure (millibars)': 'pressure',
+        'Daily Summary': 'daily_summary'
+    }
     
-    # Convert date column to datetime
-    df_cleaned['date'] = pd.to_datetime(df_cleaned['FormattedDate'])
+    # Apply the column renaming
+    df_cleaned.rename(columns=columns_map, inplace=True)
+    
+    # Convert date column to datetime with explicit UTC=True to handle mixed timezones
+    df_cleaned['date'] = pd.to_datetime(df_cleaned['formatted_date'], utc=True)
     
     # Extract date components for time series analysis
     df_cleaned['year'] = df_cleaned['date'].dt.year

@@ -211,8 +211,8 @@ temperature increases with wind speed, confirming the wind chill effect in the d
     }
     
     # Question 4: What weather conditions are associated with different types of precipitation?
-    if 'PrecipType' in df.columns:
-        precip_stats = df.groupby('PrecipType').agg({
+    if 'precip_type' in df.columns:
+        precip_stats = df.groupby('precip_type').agg({
             'temperature': 'mean',
             'humidity': 'mean',
             'pressure': 'mean',

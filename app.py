@@ -71,8 +71,8 @@ if df is not None:
     st.subheader("Basic Statistics")
     
     # Select relevant numerical columns for statistics
-    numerical_cols = ['temperature', 'apparentTemperature', 'humidity', 
-                      'windSpeed', 'windBearing', 'visibility', 'pressure']
+    numerical_cols = ['temperature', 'apparent_temperature', 'humidity', 
+                      'wind_speed', 'wind_bearing', 'visibility', 'pressure']
     
     stats_df = calculate_basic_stats(df, numerical_cols)
     st.dataframe(stats_df)

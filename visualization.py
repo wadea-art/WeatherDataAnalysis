@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
+from matplotlib.ticker import MaxNLocator
 
 def set_default_plot_style():
     """Set default plot style for consistency"""
@@ -41,11 +42,11 @@ def create_time_series_plot(df, variable, time_agg):
         df_agg['period'] = df_agg['year'].astype(str) + '-W' + df_agg['weekofyear'].astype(str).str.zfill(2)
         x_label = "Year-Week"
     elif time_agg == "Month":
-        df_agg = df.groupby([df['date'].dt.year, df['date'].dt.month])[variable].mean().reset_index()
-        df_agg['period'] = df_agg['date_year'].astype(str) + '-' + df_agg['date_month'].astype(str).str.zfill(2)
+        df_agg = df.groupby(['year', 'month'])[variable].mean().reset_index()
+        df_agg['period'] = df_agg['year'].astype(str) + '-' + df_agg['month'].astype(str).str.zfill(2)
         x_label = "Year-Month"
     else:  # Year
-        df_agg = df.groupby(df['date'].dt.year)[variable].mean().reset_index()
+        df_agg = df.groupby('year')[variable].mean().reset_index()
         x_label = "Year"
     
     # Plot
@@ -54,10 +55,11 @@ def create_time_series_plot(df, variable, time_agg):
         plt.gcf().autofmt_xdate()  # Rotate x-axis labels for better readability
     elif time_agg in ["Week", "Month"]:
         plt.plot(range(len(df_agg)), df_agg[variable], marker='o', linestyle='-', markersize=4, alpha=0.7)
-        plt.xticks(range(len(df_agg)), df_agg['period'], rotation=90)
-        plt.gca().xaxis.set_major_locator(plt.MaxNLocator(20))  # Show max 20 ticks
+        if len(df_agg) > 0:  # Check if there's data to plot
+            plt.xticks(range(len(df_agg)), df_agg['period'], rotation=90)
+            plt.gca().xaxis.set_major_locator(MaxNLocator(20))  # Show max 20 ticks
     else:  # Year
-        plt.plot(df_agg['date_year'], df_agg[variable], marker='o', linestyle='-', markersize=6)
+        plt.plot(df_agg['year'], df_agg[variable], marker='o', linestyle='-', markersize=6)
     
     plt.title(f'Average {variable} by {time_agg}')
     plt.xlabel(x_label)
